@@ -8,7 +8,7 @@ const Dashboard = () => {
         <div className=" bg-gray-100">
             <div className="flex">
                 <div className="h-screen border-r-[1px] border-black  w-[20%] ">
-                  <div className="flex  py-8 px-10 flex-col gap-2">
+                  <div className="flex  sm:py-8 sm:px-10 py-1 px-1 flex-col gap-2">
 
                   <NavLink to='addproduct' className={({isActive}) => `${isActive ? 'text-white bg-black' : '  '}  py-2 px-4 rounded-lg font-poppins border-[1px] border-solid border-black `}>Add Items</NavLink>
                   <NavLink to='getproduct' className={({isActive}) => `${isActive ? 'text-white bg-black' : '  '}  py-2 px-4 rounded-lg font-poppins border-[1px] border-solid border-black `}>Get Product</NavLink>
