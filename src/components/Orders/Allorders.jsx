@@ -1,12 +1,15 @@
 import React, { useEffect, useState } from "react";
-import { useMyContext } from "../context/MyContext";
-import MessageBar from "./common/MessageBar";
+import { useMyContext } from "../../context/MyContext";
+import MessageBar from "../common/MessageBar";
+import Loader from "../common/Loader";
 
 const Allorders = () => {
   const { getAllOrders, orders, updateOrder } = useMyContext();
   const [statusMap, setStatusMap] = useState({});
     const [message, setMessage] = useState("");
     const [bar, setBar] = useState(false);
+    const [loading, setLoading] = useState(true);
+
 
   const validStatus = [
     "Pending",
@@ -16,9 +19,17 @@ const Allorders = () => {
     "Cancelled",
   ];
 
+  
   useEffect(() => {
-    getAllOrders();
-  }, []);
+  const fetchOrders = async () => {
+    setLoading(true);
+    await getAllOrders();
+    setLoading(false);
+  };
+
+  fetchOrders();
+}, []);
+
 
   const handleStatusChange = (orderId, value) => {
     setStatusMap((prev) => ({
@@ -46,6 +57,8 @@ const handleUpdate = async (orderId) => {
 
   return (
     <section className=" relative">
+        {loading && <Loader />}
+        
         <MessageBar message={message} showBar={bar} />
      
          <div className="max-w-6xl mx-auto">

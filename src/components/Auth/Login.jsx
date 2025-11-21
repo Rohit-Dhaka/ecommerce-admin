@@ -2,7 +2,7 @@ import React, { useState } from "react";
 
 import { Link, useNavigate } from "react-router-dom";
 import { useMyContext } from "../../context/MyContext";
-import MessageBar from "../../components/common/MessageBar";
+import MessageBar from "../common/MessageBar";
 
 const Login = () => {
   const { login } = useMyContext();

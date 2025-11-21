@@ -1,10 +1,13 @@
 import React, { useState } from 'react';
 
 import { Link, useNavigate } from 'react-router-dom';
+
 import { useMyContext } from '../../context/MyContext';
+
 
 const Signup = () => {    
   const { signup } =  useMyContext();
+  
   const [formdata, setFormdata] = useState({ name: "", email: "", password: "" });
   const [message , setMessage] = useState("")
   const [bar , setBar] = useState(false)

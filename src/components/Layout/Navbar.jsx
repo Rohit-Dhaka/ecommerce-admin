@@ -1,7 +1,8 @@
 import React from 'react';
 
 import { Link } from 'react-router-dom';
-import { useMyContext } from '../context/MyContext';
+
+import { useMyContext } from '../../context/MyContext';
 
 
 const Navbar = () => {

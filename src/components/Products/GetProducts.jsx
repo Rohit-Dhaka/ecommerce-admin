@@ -10,7 +10,7 @@ const GetProducts = () => {
 
   return (
     <section className="py-8">
-      <div className="c">
+      <div className="">
         <h3 className="font-poppins text-xl font-semibold mb-4">
           All Products List
         </h3>

@@ -6,9 +6,9 @@ const Dashboard = () => {
   return (
     <section>
       <div className=" bg-gray-100">
-        <div className="flex max-sm:flex-col max-sm:py-2">
+        <div className="flex max-sm:flex-col ">
           <div className="sm:h-screen sm:border-r-[1px] sm:border-black  sm:w-[20%]  max-sm:flex">
-            <div className="flex max-sm:flex-row  sm:py-8 sm:px-10 py-1 px-1 flex-col gap-2 max-sm:overflow-x-scroll">
+            <div className="flex max-sm:flex-row  sm:py-8 lg:px-10 py-2 px-1 flex-col gap-2 max-sm:overflow-x-scroll max-sm:border-b-[1px]  max-sm:border-solid max-sm:border-gray-400  ">
               <NavLink
                 to="addproduct"
                 className={({ isActive }) =>
@@ -50,7 +50,7 @@ const Dashboard = () => {
                 }
               >
                 {" "}
-                <PackageCheck  className="w-6 h-6 text-lime-700" /> All Orders
+                <PackageCheck  className="w-6 h-6 text-lime-700" /> All Orders 
               </NavLink>
             </div>
           </div>

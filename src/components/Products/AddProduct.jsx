@@ -1,12 +1,22 @@
 import React, { useState } from "react";
-import MyButton from "../../common/MyButton";
+
 import { Uploades } from "../../common/icon";
 import { useMyContext } from "../../context/MyContext";
-import MessageBar from "../../components/common/MessageBar";
+
+import Loader from "../common/Loader";
+import MyButton from "../common/MyButton";
+import MessageBar from "../common/MessageBar";
+
 
 const AddProduct = () => {
   const { addProduct } = useMyContext();
   const [previewImages, setPreviewImages] = useState([]);
+   const [message, setMessage] = useState("");
+    const [bar, setBar] = useState(false);
+    const [loading, setLoading] = useState(false);
+
+
+    
 
 
 
@@ -22,45 +32,48 @@ const AddProduct = () => {
     stock: "",
   });
 
-  // ---------------------------
-  // HANDLE SUBMIT
-  // ---------------------------
+
   const handleSubmit = async (e) => {
-    e.preventDefault();
+  e.preventDefault();
 
-    // Basic validation
-    if (
-      !formdata.images.length ||
-      !formdata.title ||
-      !formdata.description ||
-      !formdata.price ||
-      !formdata.size.length ||
-      !formdata.category ||
-      !formdata.subcategory ||
-      !formdata.stock
-    ) {
-      alert("Please fill in all fields and select required options.");
-      
-      return;
-    }
+  if (
+    !formdata.images.length ||
+    !formdata.title ||
+    !formdata.description ||
+    !formdata.price ||
+    !formdata.size.length ||
+    !formdata.category ||
+    !formdata.subcategory ||
+    !formdata.stock
+  ) {
+    alert("Please fill in all fields and select required options.");
+    return;
+  }
 
-    // Prepare FormData
-    const data = new FormData();
-    formdata.images.forEach((file) => data.append("images", file));
-    data.append("title", formdata.title);
-    data.append("description", formdata.description);
-    data.append("price", formdata.price);
-    data.append("size", JSON.stringify(formdata.size));
-    data.append("category", formdata.category);
-    data.append("subcategory", formdata.subcategory);
-    data.append("stock", formdata.stock);
+  const data = new FormData();
+  formdata.images.forEach((file) => data.append("images", file));
+  data.append("title", formdata.title);
+  data.append("description", formdata.description);
+  data.append("price", formdata.price);
+  formdata.size.forEach((s) => data.append("size", s));
+  data.append("category", formdata.category);
+  data.append("subcategory", formdata.subcategory);
+  data.append("stock", formdata.stock);
 
-    await addProduct(data);
+  try {
+    setLoading(true);
+
+    const res = await addProduct(data);
+
+    setMessage(res?.message || "Product Added Successfully");
+    setBar(true);
+
+    setTimeout(() => {
+      setMessage("");
+      setBar(false);
+    }, 2000);
 
     
-    
-
-    // Reset Form
     setFormData({
       images: [],
       title: "",
@@ -71,18 +84,24 @@ const AddProduct = () => {
       subcategory: "",
       stock: "",
     });
-
-    // Reset file input
+    setPreviewImages([]);
     document.getElementById("productimg").value = "";
-  };
 
-  // ---------------------------
-  // HANDLE SELECTION (SIZE, CATEGORY, SUBCATEGORY)
-  // ---------------------------
- const handleSelection = (field, value) => {
+  } catch (error) {
+    setMessage("Something went wrong!");
+    setBar(true);
+
+    setTimeout(() => setBar(false), 2000);
+
+  } finally {
+    setLoading(false); 
+  }
+};
+
+
+
+const handleSelection = (field, value) => {
   if (field === "size") {
-    value = value.toUpperCase(); // ALWAYS uppercase
-
     setFormData((prev) => {
       const sizes = prev.size;
 
@@ -96,8 +115,13 @@ const AddProduct = () => {
 };
 
 
+
   return (
-    <section className="">
+    <section className=" relative">
+      {loading && <Loader />}
+
+      <MessageBar message={message} showBar={bar} />
+      
       
 
       <div className="container">
@@ -111,14 +135,40 @@ const AddProduct = () => {
 
             <label
               htmlFor="productimg"
-              className="border-dotted border w-full py-4 flex justify-center rounded-md cursor-pointer"
+              className="border-dashed border-[1px] border-gray-600  w-full py-2 flex justify-center rounded-md cursor-pointer"
             >
-              <Uploades />
+        {previewImages.length === 0 && (
+    <div className="border-dotted  w-full py-4 flex justify-center rounded-md cursor-pointer">
+      <Uploades />
+    </div>
+  )}
+
+  {/* If images exist → show previews */}
+  {previewImages.length > 0 && (
+    <div className="flex gap-3 flex-wrap">
+      {previewImages.map((img, i) => (
+        <div
+          key={i}
+          className="w-20 h-20 max-sm:w-full border rounded-md overflow-hidden"
+        >
+          <img
+            src={img}
+            alt="preview"
+            className="w-full h-full object-cover"
+          />
+        </div>
+      ))}
+    </div>
+  )}
+
+              
+   
             </label>
 
           <input
   type="file"
   id="productimg"
+  
   multiple
   accept="image/*"
   onChange={(e) => {
@@ -129,22 +179,14 @@ const AddProduct = () => {
       images: files,
     }));
 
-    // PREVIEW IMAGES
+    
     const previews = files.map((file) => URL.createObjectURL(file));
     setPreviewImages(previews);
   }}
   className="hidden"
 />
-{/* IMAGE PREVIEW SECTION */}
-{previewImages.length > 0 && (
-  <div className="mt-3 flex gap-3 flex-wrap">
-    {previewImages.map((img, i) => (
-      <div key={i} className="w-20 h-20 border rounded-md overflow-hidden">
-        <img src={img} alt="preview" className="w-full h-full object-cover" />
-      </div>
-    ))}
-  </div>
-)}
+
+
 
           </div>
 
@@ -259,16 +301,17 @@ const AddProduct = () => {
                     type="checkbox"
                     value={size}
                     checked={formdata.size.includes(size)}
-                    onChange={() => handleSelection("size", size.toUpperCase())}
+                    onChange={() => handleSelection("size", size)}
 
                   />
-                  {size.toUpperCase()}
+                  {size}
                 </label>
               ))}
             </div>
           </div>
 
           <MyButton type="submit" buttonnmae="ADD" />
+
         </form>
       </div>
     </section>
