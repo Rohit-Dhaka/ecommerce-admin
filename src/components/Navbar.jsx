@@ -1,10 +1,12 @@
 import React from 'react';
-import { UseContext } from '../context/AuthContext';
+
 import { Link } from 'react-router-dom';
-import { Logo } from '../common/icon';
+import { useMyContext } from '../context/MyContext';
+
 
 const Navbar = () => {
-  const { logout, isLogin } = UseContext();
+  
+  const { logout, isLogin } = useMyContext();
 
   const handleLogout = () => {
     logout();
@@ -15,9 +17,10 @@ const Navbar = () => {
       <div className="container  border-b-[1px] border-solid  border-[#ADADAD]">
         
       <div className=" pt-[29px] pb-[19px] flex justify-between">
-          <Link to="/" className="">
-          <Logo/>
-        </Link>
+            <Link to="/"  className="z-20 text-[32px]  leading-[40px] uppercase font-semibold">
+            
+            Shopora
+          </Link>
 
         
         <div className="space-x-4">

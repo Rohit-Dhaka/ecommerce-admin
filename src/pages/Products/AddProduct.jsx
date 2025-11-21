@@ -1,101 +1,136 @@
-import React, { useState, useContext } from "react";
-import {  UseContext } from "../../context/AuthContext"; // ✅ import context correctly
+import React, { useState,  } from "react";
+
+import MyButton from "../../common/MyButton";
+import { Uploades } from "../../common/icon";
+import { useMyContext } from "../../context/MyContext";
+
 
 const AddProduct = () => {
-  const { addproduct } = UseContext(); // ✅ correct way
+  
+  const { addproduct } = useMyContext()
 
-  const [formdata, setFormdata] = useState({
-    image: "",
+  const [formdata, setFormData] = useState({
+    
+    images: [],
     title: "",
     description: "",
     price: "",
     size: [],
-    category: [],
-    subcategory: [],
+    category: "",
+    subcategory: "",
     stock: "",
   });
 
-  // ✅ handle submit
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+const handleSubmit = async (e) => {
+  e.preventDefault();
 
-    const data = new FormData();
-    data.append("image", formdata.image);
-    data.append("title", formdata.title);
-    data.append("description", formdata.description);
-    data.append("price", formdata.price);
-    data.append("size", JSON.stringify(formdata.size));
-    data.append("category", JSON.stringify(formdata.category));
-    data.append("subcategory", JSON.stringify(formdata.subcategory));
-    data.append("stock", formdata.stock);
+  
+  if (
+    !formdata.images.length ||
+    !formdata.title ||
+    !formdata.description ||
+    !formdata.price ||
+    !formdata.size.length ||
+    !formdata.category ||
+    !formdata.subcategory ||
+    !formdata.stock
+  ) {
+    alert("Please fill in all fields and select size, category, and subcategory");
+    return;
+  }
 
-    await addproduct(data); // send FormData
+  const data = new FormData();
+  formdata.images.forEach((file) => {
+    data.append("images", file);
+  });
+  data.append("title", formdata.title);
+  data.append("description", formdata.description);
+  data.append("price", formdata.price);
+  data.append("size", JSON.stringify(formdata.size)); 
+  data.append("category", formdata.category);
+  data.append("subcategory", formdata.subcategory);
+  data.append("stock", formdata.stock);
 
-    // ✅ reset form
-    setFormdata({
-      image: "",
-      title: "",
-      description: "",
-      price: "",
-      size: [],
-      category: [],
-      subcategory: [],
-      stock: "",
+  await addproduct(data); 
+
+  
+  setFormData({
+    images: [],
+    title: "",
+    description: "",
+    price: "",
+    size: [],
+    category: "",
+    subcategory: "",
+    stock: "",
+  });
+};
+
+
+
+
+  const handleSelection = (field, value) => {
+  if (field === "size") {
+    setFormData((prev) => {
+      const sizes = prev.size || [];
+      if (sizes.includes(value)) {        
+        return { ...prev, size: sizes.filter((s) => s !== value) };
+      } else {        
+        return { ...prev, size: [...sizes, value] };
+      }
     });
-  };
+  } else {
+    setFormData((prev) => ({ ...prev, [field]: value }));
+  }
+};
 
-  // ✅ toggle checkboxes
-  const toggleValue = (field, value) => {
-    setFormdata((prev) => ({
-      ...prev,
-      [field]: prev[field].includes(value)
-        ? prev[field].filter((v) => v !== value)
-        : [...prev[field], value],
-    }));
-  };
 
   return (
-    <section className="flex justify-center items-center py-10 bg-gray-50 min-h-screen">
-  <form
+    <section className="">
+<div className="container">
+    <form
     onSubmit={handleSubmit}
-    className="w-full max-w-lg bg-white shadow-lg rounded-2xl p-6 space-y-6"
+    className="max-w-[500px] overflow-hidden"
   >
-    {/* Title */}
-    <h2 className="text-2xl font-bold text-gray-700 text-center">
-      Add New Product
-    </h2>
+   
 
-    {/* Image Upload */}
-    <div>
-      <label className="block text-sm font-medium text-gray-600">
+    
+    <div className="flex flex-col items-start">
+      <label className=" inline-block font-poppins text-[#4B5563] pb-4" >
         Product Image
       </label>
+      <label htmlFor="productimg" className="border-[1px] border-dotted border-[#4B5563] inline-block  py-4 px-6 rounded-md"> 
+        <Uploades/>
+      </label>
       <input
-        type="file"
-        accept="image/*"
-        onChange={(e) =>
-          setFormdata({ ...formdata, image: e.target.files[0] })
-        }
-        className="mt-2 block w-full text-sm text-gray-700 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
-      />
+  type="file"
+  id="productimg"
+  multiple
+  accept="image/*"
+  onChange={(e) =>
+    setFormData(prev => ({ ...prev, images: Array.from(e.target.files) }))
+  }
+  className="hidden"
+/>
+
     </div>
 
     {/* Title */}
-    <div>
-      <label className="block text-sm font-medium text-gray-600">Title</label>
+    <div className="pt-4">
+      <label className="text-[#4B5563] font-outfit">Product name</label>
       <input
         type="text"
-        placeholder="Enter product title"
+        placeholder="Product name"
         value={formdata.title}
-        onChange={(e) => setFormdata({ ...formdata, title: e.target.value })}
+        onChange={(e) => setFormData({ ...formdata, title: e.target.value })}
         required
         className="mt-2 block w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
       />
     </div>
 
     {/* Description */}
-    <div>
-      <label className="block text-sm font-medium text-gray-600">
+    <div className="pt-4">
+      <label className=" inline-block font-poppins text-[#4B5563]">
         Description
       </label>
       <input
@@ -103,7 +138,7 @@ const AddProduct = () => {
         placeholder="Enter description"
         value={formdata.description}
         onChange={(e) =>
-          setFormdata({ ...formdata, description: e.target.value })
+          setFormData({ ...formdata, description: e.target.value })
         }
         required
         className="mt-2 block w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
@@ -111,25 +146,25 @@ const AddProduct = () => {
     </div>
 
     
-    <div className="grid grid-cols-2 gap-4">
+    <div className="grid grid-cols-2 gap-4 pt-4">
       <div>
-        <label className="block text-sm font-medium text-gray-600">Price</label>
+        <label className=" inline-block font-poppins text-[#4B5563]">Price</label>
         <input
           type="number"
           placeholder="Price"
           value={formdata.price}
-          onChange={(e) => setFormdata({ ...formdata, price: e.target.value })}
+          onChange={(e) => setFormData({ ...formdata, price: e.target.value })}
           required
           className="mt-2 block w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
         />
       </div>
       <div>
-        <label className="block text-sm font-medium text-gray-600">Stock</label>
+        <label className=" inline-block font-poppins text-[#4B5563]">Stock</label>
         <input
           type="number"
           placeholder="Stock"
           value={formdata.stock}
-          onChange={(e) => setFormdata({ ...formdata, stock: e.target.value })}
+          onChange={(e) => setFormData({ ...formdata, stock: e.target.value })}
           required
           className="mt-2 block w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
         />
@@ -137,85 +172,74 @@ const AddProduct = () => {
     </div>
 
     {/* Sizes */}
-    <div>
-      <p className="text-sm font-medium text-gray-600 mb-2">Select Size:</p>
-      <div className="flex gap-3 flex-wrap">
-        {["s", "m", "l", "xl", "2xl"].map((size) => (
-          <label
-            key={size}
-            className="flex items-center gap-1 text-gray-700 cursor-pointer"
-          >
-            <input
-              type="checkbox"
-              checked={formdata.size.includes(size)}
-              onChange={() => toggleValue("size", size)}
-              className="rounded text-blue-600 focus:ring-blue-500"
-            />
-            {size.toUpperCase()}
-          </label>
-        ))}
-      </div>
-    </div>
 
-    {/* Categories */}
-    <div>
-      <p className="text-sm font-medium text-gray-600 mb-2">Select Category:</p>
-      <div className="flex gap-3 flex-wrap">
-        {["Men", "Women", "Kids"].map((cat) => (
-          <label
-            key={cat}
-            className="flex items-center gap-1 text-gray-700 cursor-pointer"
-          >
-            <input
-              type="checkbox"
-              checked={formdata.category.includes(cat)}
-              onChange={() => toggleValue("category", cat)}
-              className="rounded text-blue-600 focus:ring-blue-500"
-            />
-            {cat}
-          </label>
-        ))}
-      </div>
-    </div>
 
-    {/* Subcategories */}
-    <div>
-      <p className="text-sm font-medium text-gray-600 mb-2">
-        Select Subcategory:
-      </p>
-      <div className="flex gap-3 flex-wrap">
-        {["Topwear", "Bottomwear", "Winterwear"].map((sub) => (
-          <label
-            key={sub}
-            className="flex items-center gap-1 text-gray-700 cursor-pointer"
-          >
-            <input
-              type="checkbox"
-              checked={formdata.subcategory.includes(sub)}
-              onChange={() => toggleValue("subcategory", sub)}
-              className="rounded text-blue-600 focus:ring-blue-500"
-            />
-            {sub}
-          </label>
-        ))}
-      </div>
-    </div>
 
-    {/* Submit */}
-    <div className="text-center">
-      <button
-        type="submit"
-        className="w-full py-2 px-4 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 transition"
+  {/* Category */}
+<div className="pt-4">
+  <label className=" inline-block font-poppins text-[#4B5563]">
+    Select Category:
+  </label>
+  <select
+    value={formdata.category}
+    onChange={(e) => handleSelection("category", e.target.value)}
+    className="mt-2 block w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+    required
+  >
+    <option value="">-- Select Category --</option>
+    <option value="Men">Men</option>
+    <option value="Women">Women</option>
+    <option value="Kids">Kids</option>
+  </select>
+</div>
+
+{/* Subcategory */}
+<div className="pt-4">
+  <label className=" inline-block font-poppins text-[#4B5563]">
+    Select Subcategory:
+  </label>
+  <select
+    value={formdata.subcategory}
+    onChange={(e) => handleSelection("subcategory", e.target.value)}
+    className="mt-2 block w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+    required
+  >
+    <option value="">-- Select Subcategory --</option>
+    <option value="Topwear">Topwear</option>
+    <option value="Bottomwear">Bottomwear</option>
+    <option value="Winterwear">Winterwear</option>
+  </select>
+</div>
+
+
+
+<div className="py-4">
+  <p className=" inline-block font-poppins text-[#4B5563] pb-4">Select Size:</p>
+  <div className="flex gap-3 flex-wrap">
+    {["s", "m", "l", "xl", "2xl"].map((size) => (
+      <label
+        key={size}
+        className="flex items-center gap-1 text-gray-700 cursor-pointer"
       >
-        Add Product
-      </button>
-    </div>
+        <input
+          type="checkbox"
+          name="size"
+          value={size}
+          checked={formdata.size?.includes(size)}
+          onChange={() => handleSelection("size", size)}
+          className="text-blue-600 focus:ring-blue-500"
+        />
+        {size.toUpperCase()}
+      </label>
+    ))}
+  </div>
+</div>             
+    <MyButton type="submit" buttonnmae="ADD"/>
   </form>
+</div>
 </section>
 
   );
 };
 
 export default AddProduct;
-
-

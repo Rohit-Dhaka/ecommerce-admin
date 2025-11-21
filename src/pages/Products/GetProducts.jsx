@@ -1,11 +1,13 @@
 import React, { useEffect } from "react";
-import { UseContext } from "../../context/AuthContext";
+
+import { useMyContext } from "../../context/MyContext";
 
 const GetProducts = () => {
-  const { getproduct, products } = UseContext();
+  
+  const { getProducts, products } = useMyContext();
 
   useEffect(() => {
-    getproduct();
+    getProducts();
   }, []);
   console.log("all products", products);
   return (
@@ -28,7 +30,7 @@ const GetProducts = () => {
               <td className=" py-2 flex items-center justify-center overflow-hidden">
                 <div className=" w-[50px] h-[50px]">
                   <img
-                    src={pro.imagesUrl}
+                    src={pro.imagesUrl[0]}
                     alt=""
                     className="w-full h-full object-contain"
                   />

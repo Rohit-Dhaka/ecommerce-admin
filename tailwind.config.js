@@ -8,9 +8,19 @@ module.exports = {
         padding: "12px",
       },
       fontFamily: {
-        prata: ["Prata", "serif"],
-        poppins: ["Poppins", "sans-serif"],
+        'prata': ["Prata", "serif"],
+        'poppins': ["Poppins", "sans-serif"],
+        'outfit':["Outfit, sans-serif"],  
       },
+      animation:{
+        "progress":"progressbar 2s linear forwards"
+      },
+      keyframes:{
+        progressbar:{
+          "0%":{ width: "0%"},
+          "100%":{ width: "100%"}
+        }
+      }
     },
   },
   plugins: [],

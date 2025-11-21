@@ -1,18 +1,51 @@
 import React, { useState } from "react";
-import { UseContext } from "../../context/AuthContext";
-import { Link } from "react-router-dom";
+
+import { Link, useNavigate } from "react-router-dom";
+import { useMyContext } from "../../context/MyContext";
 
 const Login = () => {
-  const { login } = UseContext();
+  
+  const { login } = useMyContext()
   const [formdata, setFormdata] = useState({ email: "", password: "" });
+    const [message , setMessage] = useState("")
+    const [bar , setBar] = useState(false)
+    const navigate = useNavigate()
+    
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    await login(formdata);
+    try{
+      const res = await login(formdata);
+      console.log(res.message)
+      setMessage(res.message)
+      setBar(true)
+
+      setTimeout(() => {
+          setMessage("")
+          setBar(false)
+          navigate("/dashboard")
+      }, 2000);
+
+
+
+    }
+    catch(error){
+      console.log(error)
+    }
   };
 
   return (
-    <section className=" h-screen flex items-center">
+    <section className=" h-screen flex items-center relative ">
+          {message && (
+      <div className=" absolute py-2 flex  flex-col  gap-2 px-3 rounded-lg shadow-2xl  top-10 left-[50%]  translate-x-[-50%]">
+            {message}
+            {bar && (
+
+            <span className='bg-blue-500 rounded-lg h-1  w-full  inline-block animate-progress'></span>
+            )}
+          </div>
+
+    )}
       <div className="container">
        <div className=" flex  flex-col  items-center  ">
          <div className="flex items-center gap-2 pb-[38px]">
@@ -46,12 +79,14 @@ const Login = () => {
 
           
             
-            <Link
+          <div className="flex justify-end w-full pt-[14px] pb-11">
+              <Link
               to="/signup"
-              className=" font-poppins text-end   w-full pt-[14px] pb-11"
+              className=" font-poppins   "
             >
               Create account
             </Link>
+          </div>
 
 
               <input
