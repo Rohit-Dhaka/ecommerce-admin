@@ -1,9 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { useMyContext } from "../context/MyContext";
+import MessageBar from "./common/MessageBar";
 
 const Allorders = () => {
   const { getAllOrders, orders, updateOrder } = useMyContext();
   const [statusMap, setStatusMap] = useState({});
+    const [message, setMessage] = useState("");
+    const [bar, setBar] = useState(false);
 
   const validStatus = [
     "Pending",
@@ -23,16 +26,27 @@ const Allorders = () => {
       [orderId]: value,
     }));
   };
+const handleUpdate = async (orderId) => {
+  const selectedStatus =
+    statusMap[orderId] || orders.find((o) => o._id === orderId)?.status;
 
-  const handleUpdate = async (orderId) => {
-    const selectedStatus =
-      statusMap[orderId] || orders.find((o) => o._id === orderId)?.status;
+  const res = await updateOrder(orderId, selectedStatus);
 
-    await updateOrder(orderId, selectedStatus);
-  };
+  if (res && res.message) {
+    setMessage(res.message);
+    setBar(true);
+
+    setTimeout(() => {
+      setMessage("");
+      setBar(false);
+    }, 2000);
+  }
+};
+
 
   return (
-    <section className="">
+    <section className=" relative">
+        <MessageBar message={message} showBar={bar} />
      
          <div className="max-w-6xl mx-auto">
         <h2 className="text-3xl font-bold mb-8 text-gray-800 ">All Orders</h2>
@@ -46,11 +60,11 @@ const Allorders = () => {
           {orders?.map((order) => (
             <div
               key={order._id}
-              className="border border-gray-300 rounded-xl sm:p-6 p-4 bg-white shadow-md hover:shadow-lg transition"
+              className="border border-gray-300 rounded-xl sm:p-6 p-4 bg-gray-50 shadow-md hover:shadow-lg transition"
             >
               {/* ORDER TOP */}
               <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4 border-b pb-4">
-                <div>
+                <div className="">
                   <h3 className="font-semibold text-lg text-gray-900">
                     Order ID:{" "}
                     <span className="text-blue-600 font-medium">

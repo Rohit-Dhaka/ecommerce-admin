@@ -1,83 +1,94 @@
-import React, { useState,  } from "react";
-
+import React, { useState } from "react";
 import MyButton from "../../common/MyButton";
 import { Uploades } from "../../common/icon";
 import { useMyContext } from "../../context/MyContext";
-
+import MessageBar from "../../components/common/MessageBar";
 
 const AddProduct = () => {
-  
-  const { addproduct } = useMyContext()
+  const { addProduct } = useMyContext();
+  const [previewImages, setPreviewImages] = useState([]);
+
+
+
 
   const [formdata, setFormData] = useState({
+    images: [],
+    title: "",
+    description: "",
+    price: "",
+    size: [],
+    category: "",
+    subcategory: "",
+    stock: "",
+  });
+
+  // ---------------------------
+  // HANDLE SUBMIT
+  // ---------------------------
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    // Basic validation
+    if (
+      !formdata.images.length ||
+      !formdata.title ||
+      !formdata.description ||
+      !formdata.price ||
+      !formdata.size.length ||
+      !formdata.category ||
+      !formdata.subcategory ||
+      !formdata.stock
+    ) {
+      alert("Please fill in all fields and select required options.");
+      
+      return;
+    }
+
+    // Prepare FormData
+    const data = new FormData();
+    formdata.images.forEach((file) => data.append("images", file));
+    data.append("title", formdata.title);
+    data.append("description", formdata.description);
+    data.append("price", formdata.price);
+    data.append("size", JSON.stringify(formdata.size));
+    data.append("category", formdata.category);
+    data.append("subcategory", formdata.subcategory);
+    data.append("stock", formdata.stock);
+
+    await addProduct(data);
+
     
-    images: [],
-    title: "",
-    description: "",
-    price: "",
-    size: [],
-    category: "",
-    subcategory: "",
-    stock: "",
-  });
+    
 
-const handleSubmit = async (e) => {
-  e.preventDefault();
+    // Reset Form
+    setFormData({
+      images: [],
+      title: "",
+      description: "",
+      price: "",
+      size: [],
+      category: "",
+      subcategory: "",
+      stock: "",
+    });
 
-  
-  if (
-    !formdata.images.length ||
-    !formdata.title ||
-    !formdata.description ||
-    !formdata.price ||
-    !formdata.size.length ||
-    !formdata.category ||
-    !formdata.subcategory ||
-    !formdata.stock
-  ) {
-    alert("Please fill in all fields and select size, category, and subcategory");
-    return;
-  }
+    // Reset file input
+    document.getElementById("productimg").value = "";
+  };
 
-  const data = new FormData();
-  formdata.images.forEach((file) => {
-    data.append("images", file);
-  });
-  data.append("title", formdata.title);
-  data.append("description", formdata.description);
-  data.append("price", formdata.price);
-  data.append("size", JSON.stringify(formdata.size)); 
-  data.append("category", formdata.category);
-  data.append("subcategory", formdata.subcategory);
-  data.append("stock", formdata.stock);
-
-  await addproduct(data); 
-
-  
-  setFormData({
-    images: [],
-    title: "",
-    description: "",
-    price: "",
-    size: [],
-    category: "",
-    subcategory: "",
-    stock: "",
-  });
-};
-
-
-
-
-  const handleSelection = (field, value) => {
+  // ---------------------------
+  // HANDLE SELECTION (SIZE, CATEGORY, SUBCATEGORY)
+  // ---------------------------
+ const handleSelection = (field, value) => {
   if (field === "size") {
+    value = value.toUpperCase(); // ALWAYS uppercase
+
     setFormData((prev) => {
-      const sizes = prev.size || [];
-      if (sizes.includes(value)) {        
-        return { ...prev, size: sizes.filter((s) => s !== value) };
-      } else {        
-        return { ...prev, size: [...sizes, value] };
-      }
+      const sizes = prev.size;
+
+      return sizes.includes(value)
+        ? { ...prev, size: sizes.filter((s) => s !== value) }
+        : { ...prev, size: [...sizes, value] };
     });
   } else {
     setFormData((prev) => ({ ...prev, [field]: value }));
@@ -87,158 +98,180 @@ const handleSubmit = async (e) => {
 
   return (
     <section className="">
-<div className="container">
-    <form
-    onSubmit={handleSubmit}
-    className="max-w-[500px] overflow-hidden"
-  >
-   
+      
 
-    
-    <div className="flex flex-col items-start">
-      <label className=" inline-block font-poppins text-[#4B5563] pb-4" >
-        Product Image
-      </label>
-      <label htmlFor="productimg" className="border-[1px] border-dotted border-[#4B5563] inline-block  py-4 px-6 rounded-md"> 
-        <Uploades/>
-      </label>
-      <input
+      <div className="container">
+        <form onSubmit={handleSubmit} className="max-w-[500px] overflow-hidden">
+
+          {/* Product Image Upload */}
+          <div className="flex flex-col items-start">
+            <label className="font-poppins text-[#4B5563] pb-2">
+              Product Images
+            </label>
+
+            <label
+              htmlFor="productimg"
+              className="border-dotted border w-full py-4 flex justify-center rounded-md cursor-pointer"
+            >
+              <Uploades />
+            </label>
+
+          <input
   type="file"
   id="productimg"
   multiple
   accept="image/*"
-  onChange={(e) =>
-    setFormData(prev => ({ ...prev, images: Array.from(e.target.files) }))
-  }
+  onChange={(e) => {
+    const files = Array.from(e.target.files);
+
+    setFormData((prev) => ({
+      ...prev,
+      images: files,
+    }));
+
+    // PREVIEW IMAGES
+    const previews = files.map((file) => URL.createObjectURL(file));
+    setPreviewImages(previews);
+  }}
   className="hidden"
 />
-
-    </div>
-
-    {/* Title */}
-    <div className="pt-4">
-      <label className="text-[#4B5563] font-outfit">Product name</label>
-      <input
-        type="text"
-        placeholder="Product name"
-        value={formdata.title}
-        onChange={(e) => setFormData({ ...formdata, title: e.target.value })}
-        required
-        className="mt-2 block w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-      />
-    </div>
-
-    {/* Description */}
-    <div className="pt-4">
-      <label className=" inline-block font-poppins text-[#4B5563]">
-        Description
-      </label>
-      <input
-        type="text"
-        placeholder="Enter description"
-        value={formdata.description}
-        onChange={(e) =>
-          setFormData({ ...formdata, description: e.target.value })
-        }
-        required
-        className="mt-2 block w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-      />
-    </div>
-
-    
-    <div className="grid grid-cols-2 gap-4 pt-4">
-      <div>
-        <label className=" inline-block font-poppins text-[#4B5563]">Price</label>
-        <input
-          type="number"
-          placeholder="Price"
-          value={formdata.price}
-          onChange={(e) => setFormData({ ...formdata, price: e.target.value })}
-          required
-          className="mt-2 block w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-        />
+{/* IMAGE PREVIEW SECTION */}
+{previewImages.length > 0 && (
+  <div className="mt-3 flex gap-3 flex-wrap">
+    {previewImages.map((img, i) => (
+      <div key={i} className="w-20 h-20 border rounded-md overflow-hidden">
+        <img src={img} alt="preview" className="w-full h-full object-cover" />
       </div>
-      <div>
-        <label className=" inline-block font-poppins text-[#4B5563]">Stock</label>
-        <input
-          type="number"
-          placeholder="Stock"
-          value={formdata.stock}
-          onChange={(e) => setFormData({ ...formdata, stock: e.target.value })}
-          required
-          className="mt-2 block w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-        />
-      </div>
-    </div>
-
-    {/* Sizes */}
-
-
-
-  {/* Category */}
-<div className="pt-4">
-  <label className=" inline-block font-poppins text-[#4B5563]">
-    Select Category:
-  </label>
-  <select
-    value={formdata.category}
-    onChange={(e) => handleSelection("category", e.target.value)}
-    className="mt-2 block w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-    required
-  >
-    <option value="">-- Select Category --</option>
-    <option value="Men">Men</option>
-    <option value="Women">Women</option>
-    <option value="Kids">Kids</option>
-  </select>
-</div>
-
-{/* Subcategory */}
-<div className="pt-4">
-  <label className=" inline-block font-poppins text-[#4B5563]">
-    Select Subcategory:
-  </label>
-  <select
-    value={formdata.subcategory}
-    onChange={(e) => handleSelection("subcategory", e.target.value)}
-    className="mt-2 block w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-    required
-  >
-    <option value="">-- Select Subcategory --</option>
-    <option value="Topwear">Topwear</option>
-    <option value="Bottomwear">Bottomwear</option>
-    <option value="Winterwear">Winterwear</option>
-  </select>
-</div>
-
-
-
-<div className="py-4">
-  <p className=" inline-block font-poppins text-[#4B5563] pb-4">Select Size:</p>
-  <div className="flex gap-3 flex-wrap">
-    {["s", "m", "l", "xl", "2xl"].map((size) => (
-      <label
-        key={size}
-        className="flex items-center gap-1 text-gray-700 cursor-pointer"
-      >
-        <input
-          type="checkbox"
-          name="size"
-          value={size}
-          checked={formdata.size?.includes(size)}
-          onChange={() => handleSelection("size", size)}
-          className="text-blue-600 focus:ring-blue-500"
-        />
-        {size.toUpperCase()}
-      </label>
     ))}
   </div>
-</div>             
-    <MyButton type="submit" buttonnmae="ADD"/>
-  </form>
-</div>
-</section>
+)}
 
+          </div>
+
+          {/* TITLE */}
+          <div className="pt-4">
+            <label className="text-[#4B5563] font-outfit">Product Name</label>
+            <input
+              type="text"
+              placeholder="Product name"
+              value={formdata.title}
+              onChange={(e) =>
+                setFormData({ ...formdata, title: e.target.value })
+              }
+              className="mt-2 block w-full p-2 border rounded-lg"
+              required
+            />
+          </div>
+
+          {/* DESCRIPTION */}
+          <div className="pt-4">
+            <label className="font-poppins text-[#4B5563]">Description</label>
+            <input
+              type="text"
+              placeholder="Enter description"
+              value={formdata.description}
+              onChange={(e) =>
+                setFormData({ ...formdata, description: e.target.value })
+              }
+              className="mt-2 block w-full p-2 border rounded-lg"
+              required
+            />
+          </div>
+
+          {/* PRICE + STOCK */}
+          <div className="grid grid-cols-2 gap-4 pt-4">
+            <div>
+              <label className="font-poppins text-[#4B5563]">Price</label>
+              <input
+                type="number"
+                placeholder="Price"
+                value={formdata.price}
+                onChange={(e) =>
+                  setFormData({ ...formdata, price: e.target.value })
+                }
+                className="mt-2 block w-full p-2 border rounded-lg"
+                required
+              />
+            </div>
+
+            <div>
+              <label className="font-poppins text-[#4B5563]">Stock</label>
+              <input
+                type="number"
+                placeholder="Stock"
+                value={formdata.stock}
+                onChange={(e) =>
+                  setFormData({ ...formdata, stock: e.target.value })
+                }
+                className="mt-2 block w-full p-2 border rounded-lg"
+                required
+              />
+            </div>
+          </div>
+
+          {/* CATEGORY */}
+          <div className="pt-4">
+            <label className="font-poppins text-[#4B5563]">
+              Select Category
+            </label>
+            <select
+              value={formdata.category}
+              onChange={(e) =>
+                handleSelection("category", e.target.value)
+              }
+              className="mt-2 block w-full p-2 border rounded-lg"
+              required
+            >
+              <option value="">-- Select Category --</option>
+              <option value="Men">Men</option>
+              <option value="Women">Women</option>
+              <option value="Kids">Kids</option>
+            </select>
+          </div>
+
+          {/* SUBCATEGORY */}
+          <div className="pt-4">
+            <label className="font-poppins text-[#4B5563]">
+              Select Subcategory
+            </label>
+            <select
+              value={formdata.subcategory}
+              onChange={(e) =>
+                handleSelection("subcategory", e.target.value)
+              }
+              className="mt-2 block w-full p-2 border rounded-lg"
+              required
+            >
+              <option value="">-- Select Subcategory --</option>
+              <option value="Topwear">Topwear</option>
+              <option value="Bottomwear">Bottomwear</option>
+              <option value="Winterwear">Winterwear</option>
+            </select>
+          </div>
+
+          {/* SIZE SELECTION */}
+          <div className="py-4">
+            <p className="font-poppins text-[#4B5563] pb-2">Select Size:</p>
+            <div className="flex gap-3 flex-wrap">
+              {["s", "m", "l", "xl", "2xl"].map((size) => (
+                <label key={size} className="flex items-center gap-1">
+                  <input
+                    type="checkbox"
+                    value={size}
+                    checked={formdata.size.includes(size)}
+                    onChange={() => handleSelection("size", size.toUpperCase())}
+
+                  />
+                  {size.toUpperCase()}
+                </label>
+              ))}
+            </div>
+          </div>
+
+          <MyButton type="submit" buttonnmae="ADD" />
+        </form>
+      </div>
+    </section>
   );
 };
 

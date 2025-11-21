@@ -16,7 +16,7 @@ const Navbar = () => {
     <nav className="">
       <div className="container  border-b-[1px] border-solid  border-[#ADADAD]">
         
-      <div className=" pt-[29px] pb-[19px] flex justify-between">
+      <div className=" sm:pt-[29px] pt-[19px] pb-[19px] flex justify-between items-center">
             <Link to="/"  className="z-20 text-[32px]  leading-[40px] uppercase font-semibold">
             
             Shopora

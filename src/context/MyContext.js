@@ -2,7 +2,7 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../utils/api";
-import { baseUrl } from "../api/api";
+
 
 const MyContext = createContext(null);
 
@@ -25,7 +25,7 @@ export const MyProvider = ({ children }) => {
 
   const signup = async (data) => {
     try {
-      const response = await api.post("auth/adminsignup", data);
+      const response = await api.post("admin/adminsignup", data);
       return response.data;
     } catch (error) {
       console.log("Signup Error:", error);
@@ -34,13 +34,11 @@ export const MyProvider = ({ children }) => {
 
   const login = async (data) => {
     try {
-      const response = await api.post("auth/login", data);
-
+      const response = await api.post("admin/login", data);
       const token = response.data.token;
-      localStorage.setItem("token", token);
+      localStorage.setItem("token", token);      
       setIsLogin(true);
-
-      return response.data.user;
+      return response.data;
     } catch (error) {
       console.log("Login Error:", error);
       throw error;
@@ -57,22 +55,26 @@ export const MyProvider = ({ children }) => {
   // PRODUCTS
   // -------------------------
 
-  const addProduct = async (formData) => {
-    try {
-      const token = localStorage.getItem("token");
+ const addProduct = async (formData) => {
+  try {
+    const token = localStorage.getItem("token");
 
-      const response = await api.post("products/addproduct", formData, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "multipart/form-data",
-        },
-      });
+    const response = await api.post("products/addproduct", formData, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "multipart/form-data",
+      },
+    });
+    console.log("add products response" , response.data)
 
-      return response.data;
-    } catch (error) {
-      console.log("Add Product Error:", error);
-    }
-  };
+    return response.data;
+
+  } catch (error) {
+    console.log("Add Product Error:", error);
+  }
+};
+
+
 
   const getProducts = async () => {
     try {
@@ -130,7 +132,7 @@ export const MyProvider = ({ children }) => {
       status: newStatus,
     });
 
-    // Update UI instantly
+    
     setOrders((prev) =>
       prev.map((order) =>
         order._id === orderId
