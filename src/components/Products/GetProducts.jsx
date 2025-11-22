@@ -1,22 +1,31 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useMyContext } from "../../context/MyContext";
+import Loader from "../common/Loader";
 
 const GetProducts = () => {
   const { getProducts, products } = useMyContext();
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    getProducts();
+    const fetchData = async () => {
+      setLoading(true);      
+      await getProducts();
+      setLoading(false);
+    };
+    fetchData();
   }, []);
 
-  return (
-    <section className="py-8">
-      <div className="">
-        <h3 className="font-poppins text-xl font-semibold mb-4">
+  return ( 
+    <section className="py-8 ">
+      {loading && <Loader />}
+       <h3 className="font-poppins text-xl font-semibold mb-4">
           All Products List
         </h3>
 
-        {/* Responsive wrapper */}
-        <div className="overflow-x-auto rounded-lg shadow">
+      <div className=" overflow-y-scroll h-[80vh]  overflow-hidden">
+       
+
+        <div className="overflow-x-auto rounded-lg shadow pb-32">
           <table className="min-w-full border border-gray-300">
             <thead>
               <tr className="bg-gray-200 text-gray-800 text-sm sm:text-base">
@@ -45,18 +54,9 @@ const GetProducts = () => {
                       </div>
                     </td>
 
-                    <td className="py-2 px-4 border text-gray-700 font-medium">
-                      {pro.title}
-                    </td>
-
-                    <td className="py-2 px-4 border text-gray-600">
-                      {pro.category}
-                    </td>
-
-                    <td className="py-2 px-4 border font-semibold text-gray-800">
-                      ₹{pro.price}
-                    </td>
-
+                    <td className="py-2 px-4 border">{pro.title}</td>
+                    <td className="py-2 px-4 border">{pro.category}</td>
+                    <td className="py-2 px-4 border">₹{pro.price}</td>
                     <td className="py-2 px-4 border text-blue-600 cursor-pointer hover:underline">
                       Edit
                     </td>
