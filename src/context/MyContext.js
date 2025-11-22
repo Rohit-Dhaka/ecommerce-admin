@@ -65,6 +65,15 @@ export const MyProvider = ({ children }) => {
       console.log("Get Products Error:", error);
     }
   };
+ const deleteProducts = async (id) => {
+  try {
+    const response = await api.delete(`products/deleteproduct/${id}`);
+    return response.data;
+  } catch (error) {
+    console.log("Delete Product Error:", error);
+  }
+};
+
 
   const getAllUsers = async () => {
     try {
@@ -118,6 +127,7 @@ export const MyProvider = ({ children }) => {
         getAllOrders,
         orders,
         updateOrder,
+        deleteProducts
       }}
     >
       {children}

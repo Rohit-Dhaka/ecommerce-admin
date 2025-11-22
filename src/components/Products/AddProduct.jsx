@@ -117,7 +117,7 @@ const AddProduct = () => {
               </label>
               <label
                 htmlFor="productimg"
-                className="border-dashed border-[1px] border-gray-600  w-full py-2 flex justify-center rounded-md cursor-pointer"
+                className="border-dashed border-[1px] border-gray-600  w-full p-2 flex justify-center rounded-md cursor-pointer"
               >
                 {previewImages.length === 0 && (
                   <div className="border-dotted  w-full py-4 flex justify-center rounded-md cursor-pointer">
@@ -126,7 +126,7 @@ const AddProduct = () => {
                 )}
                 {/* If images exist → show previews */}
                 {previewImages.length > 0 && (
-                  <div className="flex gap-3 flex-wrap">
+                  <div className="flex max-sm:flex-row gap-3 ">
                     {previewImages.map((img, i) => (
                       <div
                         key={i}
