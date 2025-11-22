@@ -1,13 +1,12 @@
 import React from "react";
 import { NavLink, Outlet } from "react-router-dom";
-import { Plus, FilePlus, Download, Inbox , PackageCheck, User } from "lucide-react";
-import Navbar from "../Layout/Navbar";
+import { Plus,  Inbox , PackageCheck, User } from "lucide-react";
+
 
 const Dashboard = () => {
   return (
     <section>
-      <div className=" bg-gray-100">
-        <Navbar/>
+      <div className=" bg-gray-100">        
         <div className="flex max-sm:flex-col overflow-hidden  h-[90vh] ">
           <div className=" sm:border-r-[1px] sm:border-black  sm:w-[20%]  max-sm:flex">
             <div className="flex max-sm:flex-row  sm:py-8 lg:px-10 py-2 px-3 flex-col gap-2 max-sm:overflow-x-scroll max-sm:border-b-[1px]  max-sm:border-solid max-sm:border-gray-400  ">

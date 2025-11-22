@@ -16,7 +16,7 @@ function App() {
     <>
     
       
-      {/* <Navbar/> */}
+      <Navbar/>
       <Routes>
         <Route path='/' element={<Login/>} />
         <Route path='/login' element={<Login/>} />
