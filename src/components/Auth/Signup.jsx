@@ -33,7 +33,7 @@ const Signup = () => {
   };
 
   return (
-    <section className=" h-screen flex items-center relative">  
+    <section className=" h-[90vh]  flex items-center relative">  
     {message && (
       <div className=" absolute py-2 flex  flex-col  gap-2 px-3 rounded-lg shadow-2xl  top-10 left-[50%]  translate-x-[-50%]">
             {message}

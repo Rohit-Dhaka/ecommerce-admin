@@ -28,7 +28,7 @@ const Login = () => {
   };
 
   return (
-    <section className=" h-screen flex items-center relative ">
+    <section className=" h-[90vh] flex items-center relative ">
       <MessageBar message={message} showBar={bar} />
 
       <div className="container">
