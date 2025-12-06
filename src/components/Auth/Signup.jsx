@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
 import { useMyContext } from '../../context/MyContext';
+import MessageBar from '../common/MessageBar';
 
 
 const Signup = () => {    
@@ -34,16 +35,9 @@ const Signup = () => {
 
   return (
     <section className=" h-[90vh]  flex items-center relative">  
-    {message && (
-      <div className=" absolute py-2 flex  flex-col  gap-2 px-3 rounded-lg shadow-2xl  top-10 left-[50%]  translate-x-[-50%]">
-            {message}
-            {bar && (
+       <MessageBar message={message} showBar={bar} />
+       
 
-            <span className='bg-blue-500 rounded-lg h-1  w-full  inline-block animate-progress'></span>
-            )}
-          </div>
-
-    )}
     
         
 
@@ -51,8 +45,8 @@ const Signup = () => {
         
          <div className="container">
           <div className=" flex  flex-col  items-center   ">
-            <div className="flex items-center gap-2 pb-[38px]">
-              <h3 className=" font-prata font-normal text-[40px] text-[#414141]">Sign Up</h3>
+            <div className="flex items-center gap-2 pb-[38px] -z-0">
+              <h3 className=" font-prata font-normal text-[40px] text-[#414141] ">Sign Up</h3>
            <span className="h-[2px] w-[43px] bg-[#484848]"></span>
            </div>
            <form onSubmit={handleSubmit} className=" flex flex-col   items-center max-w-[517px] w-full ">

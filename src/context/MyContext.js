@@ -19,7 +19,7 @@ export const MyProvider = ({ children }) => {
 
   const signup = async (data) => {
     try {
-      const response = await api.post("admin/adminsignup", data);
+      const response = await api.post("admin/signup", data);
       return response.data;
     } catch (error) {
       console.log("Signup Error:", error);

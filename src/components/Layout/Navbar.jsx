@@ -1,7 +1,5 @@
 import React from 'react';
-
 import { Link } from 'react-router-dom';
-// import { useMyContext } from '../context/MyContext';
 import { useMyContext } from '../../context/MyContext';
 
 
@@ -14,7 +12,7 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="max-sm:h-[10vh]">
+    <nav className="">
       <div className="container  border-b-[1px] border-solid  border-[#ADADAD]">
         
       <div className="  sm:pt-[19px] max-sm:py-3 sm:pb-[19px] flex justify-between items-center">

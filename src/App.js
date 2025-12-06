@@ -9,6 +9,7 @@ import Navbar from './components/Layout/Navbar';
 import Login from './components/Auth/Login'
 import AddProduct from './components/Products/AddProduct'
 import Getalluser from './components/User/Getalluser'
+import 'quill/dist/quill.snow.css'
 
 
 function App() {

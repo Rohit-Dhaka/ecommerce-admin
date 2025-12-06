@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 import { Uploades } from "../../common/icon";
 import { useMyContext } from "../../context/MyContext";
@@ -6,6 +6,9 @@ import { useMyContext } from "../../context/MyContext";
 import Loader from "../common/Loader";
 import MyButton from "../common/MyButton";
 import MessageBar from "../common/MessageBar";
+import Quill from "quill";
+import "quill/dist/quill.snow.css";
+
 
 const AddProduct = () => {
   const { addProduct } = useMyContext();
@@ -13,6 +16,12 @@ const AddProduct = () => {
   const [message, setMessage] = useState("");
   const [bar, setBar] = useState(false);
   const [loading, setLoading] = useState(false);
+   const editorRef = useRef(null);
+  const quillRef = useRef(null);
+
+
+
+   
 
   const [formdata, setFormData] = useState({
     images: [],
@@ -77,6 +86,10 @@ const AddProduct = () => {
       });
       setPreviewImages([]);
       document.getElementById("productimg").value = "";
+
+      if (quillRef.current) {
+  quillRef.current.setContents([]);
+}
     } catch (error) {
       setMessage("Something went wrong!");
       setBar(true);
@@ -100,6 +113,22 @@ const AddProduct = () => {
       setFormData((prev) => ({ ...prev, [field]: value }));
     }
   };
+   useEffect(() => {
+    if (!quillRef.current && editorRef.current) {
+      quillRef.current = new Quill(editorRef.current, {
+        theme: "snow",
+        placeholder: "Write your blog description here...",
+      });
+
+      // Listen text-change
+      quillRef.current.on("text-change", () => {
+        setFormData((prev) => ({
+          ...prev,
+          description: quillRef.current.root.innerHTML,
+        }));
+      });
+    }
+  }, []);
 
   return (
     <section className=" ">
@@ -176,7 +205,11 @@ const AddProduct = () => {
             {/* DESCRIPTION */}
             <div className="pt-4">
               <label className="font-poppins text-[#4B5563]">Description</label>
-              <input
+               <div
+              ref={editorRef}
+              className="border  rounded-b-md h-[250px] bg-white"
+            ></div>
+              {/* <input
                 type="text"
                 placeholder="Enter description"
                 value={formdata.description}
@@ -185,7 +218,7 @@ const AddProduct = () => {
                 }
                 className="mt-2 block w-full p-2 border rounded-lg"
                 required
-              />
+              /> */}
             </div>
             {/* PRICE + STOCK */}
             <div className="grid grid-cols-2 gap-4 pt-4">
@@ -278,3 +311,11 @@ const AddProduct = () => {
 };
 
 export default AddProduct;
+
+
+
+
+
+
+
+
